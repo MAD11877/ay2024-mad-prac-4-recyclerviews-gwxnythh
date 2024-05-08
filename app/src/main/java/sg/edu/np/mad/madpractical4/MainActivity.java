@@ -1,10 +1,11 @@
 package sg.edu.np.mad.madpractical4;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.os.Bundle;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -13,7 +14,12 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.util.Random;
+
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "MainActivity";
+    private boolean followed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,44 +32,40 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Get the random integer passed from ListActivity
-        int randomInteger = getIntent().getIntExtra("randomInteger", 0);
+        // initialise user
+        User user = new User("MAD", "MAD Developer", 1, false);
 
-        // Initialize a new User object
-        User user = new User("MAD", "MAD Developer",1, false);
-
-        // Get the TextViews and Button from the layout
+        // Get textviews and button from the layout
         TextView tvName = findViewById(R.id.tvName);
-        TextView tvDescription = findViewById(R.id.tvDescription);
-        TextView tvRandomInteger = findViewById(R.id.tvRandomInteger);
-        Button btnFollow = findViewById(R.id.btnFollow);
-        Button btnMessage = findViewById(R.id.btnMessage);
+        TextView tvDesc = findViewById(R.id.description);
+        Button btnFollow = findViewById(R.id.Button1);
 
-        // Set the TextViews with the User's name, description and default button message
-        tvName.setText(user.name);
-        tvDescription.setText(user.description);
-        // btnFollow.setText("Follow");
-        btnMessage.setText("Message");
+        Random random = new Random();
 
-        // Challenge 5.1 | Making the Follow/Unfollow toggle button
-        btnFollow.setText(user.followed ? "Unfollow" : "Follow");
+        // Generate a random number within the range of 10 digits
+        long max = 9999999999L; // 10^10 - 1
+        long number = random.nextLong() % (max + 1);
 
-        // Set OnClickListener for button
-        btnFollow.setOnClickListener((view -> {
-            // Toggling 'followed' status
-            Log.d("MADPRAC2", "Follow Button Clicked");
-            user.followed = !user.followed;
+        tvName.setText(user.name + " " + number);
+        btnFollow.setText("Follow");
 
-            // Update button text accordingly
-            btnFollow.setText(user.followed ? "Unfollow" : "Follow");
 
-            // Show the toast message
-            String toastMessage = user.followed ? "Followed" : "Unfollowed";
-            Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_SHORT).show();
+        btnFollow.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                Log.i(TAG, "follow button pressed");
 
-        }));
+                // Toggle text and update followed variable
+                if (followed) {
+                    btnFollow.setText("Follow");
+                    Toast.makeText(MainActivity.this, "Unfollowed", Toast.LENGTH_SHORT).show();
+                } else {
+                    btnFollow.setText("Unfollow");
+                    Toast.makeText(MainActivity.this, "Followed", Toast.LENGTH_SHORT).show();
+                }
+                followed = !followed;
+            }
+        });
 
-        // Display random int w the name
-        tvRandomInteger.setText("" + randomInteger);
     }
 }
